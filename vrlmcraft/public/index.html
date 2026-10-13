@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>VRLMCraft Online</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<canvas id="game"></canvas>
+<div id="cross"></div>
+<div id="hud"></div>
+<div id="hud2"></div>
+<div id="clock"></div>
+<div id="hotbar"></div>
+<div id="toast"></div>
+<div id="chatbox"><div id="chatlog"></div><input id="chatin" placeholder="Enter para conversar..." maxlength="300" autocomplete="off"></div>
+<div id="peers"></div>
+
+<!-- MENU PRINCIPAL / LOGIN -->
+<div id="overlay">
+  <div class="card">
+    <h1>VRLM<span>Craft</span> <em>Online</em></h1>
+    <p id="subtitle">Mundo voxel com banco de mundos, evento diario e chat de voz.</p>
+
+    <div id="authbox">
+      <div class="tabs"><button class="tab active" data-tab="login">Entrar</button><button class="tab" data-tab="reg">Criar conta</button></div>
+      <div class="pane" id="pane-login">
+        <input id="li-user" placeholder="Usuario" autocomplete="username">
+        <input id="li-pass" type="password" placeholder="Senha" autocomplete="current-password">
+        <button class="primary" id="btn-login">Entrar</button>
+      </div>
+      <div class="pane hidden" id="pane-reg">
+        <input id="rg-user" placeholder="Usuario (min 3)" autocomplete="username">
+        <input id="rg-email" placeholder="E-mail (para recuperar senha)" autocomplete="email">
+        <input id="rg-pass" type="password" placeholder="Senha" autocomplete="new-password">
+        <button class="primary" id="btn-reg">Criar conta e jogar</button>
+      </div>
+      <div class="err" id="auth-err"></div>
+    </div>
+
+    <!-- MENU APOS LOGIN -->
+    <div id="menu" class="hidden">
+      <p class="welcome">Ola, <b id="me-name"></b>! <a id="btn-logout" href="#">sair da conta</a></p>
+
+      <div class="section"><h3>1) Escolha seu personagem</h3><div id="charpick" class="charpick"></div></div>
+
+      <div class="section"><h3>2) Modo de jogo</h3>
+        <div class="modes">
+          <button class="mode" data-mode="solo">Solo<small>offline, so voce</small></button>
+          <button class="mode" data-mode="local">Local 2 jogadores<small>mesmo PC (P2 = I J K L)</small></button>
+          <button class="mode" data-mode="online">Online<small>varios no mesmo servidor</small></button>
+          <button class="mode" data-mode="invite">Convite (P2P + voz)<small>por codigo</small></button>
+        </div>
+        <div id="invite-row" class="hidden">
+          <input id="invite-code" placeholder="Codigo da sala (ex: AB12)" maxlength="8">
+          <button id="btn-makecode">Gerar codigo</button>
+        </div>
+      </div>
+
+      <div class="section"><h3>3) Mundo / cenario</h3>
+        <div class="worlds-row">
+          <select id="world-select"></select>
+          <button id="btn-newworld">Novo mundo</button>
+          <button id="btn-delworld">Apagar</button>
+        </div>
+        <div class="scen-row"><label>Cenario padrao (gerado pela IA):</label><select id="scenario-select"></select></div>
+      </div>
+
+      <div class="section"><h3>4) Audio / voz</h3>
+        <div class="audio-row">
+          <label><input type="checkbox" id="opt-mic"> Microfone (chat de voz)</label>
+          <select id="mic-select"></select>
+          <select id="spk-select"></select>
+          <label><input type="checkbox" id="opt-music" checked> Musica do jogo</label>
+        </div>
+      </div>
+
+      <div id="event-banner" class="event hidden"></div>
+      <button class="primary big" id="btn-play">▶ JOGAR</button>
+      <p class="hint">Mouse = olhar · WASD ou setas ↑↓←→ = andar · Espaco = pular · Botão esquerdo = quebrar · Botão direito = colocar · T = tocha · F = cavar túnel · Enter = chat · M = mundo salvar</p>
+    </div>
+  </div>
+</div>
+
+<!-- Botoes touch (mobile) -->
+<div id="touch" class="hidden">
+  <div class="dpad"><button data-k="up">↑</button><div><button data-k="left">←</button><button data-k="down">↓</button><button data-k="right">→</button></div></div>
+  <div class="abtn"><button data-k="jump">Pular</button><button data-k="break">Quebrar</button><button data-k="place">Colocar</button></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="/js/net.js"></script>
+<script src="/js/voice.js"></script>
+<script src="/js/game.js"></script>
+<script src="/js/ui.js"></script>
+</body>
+</html>

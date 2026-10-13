@@ -1,0 +1,20 @@
+{
+  "name": "vrlmcraft-online",
+  "version": "2.0.0",
+  "description": "VRLMCraft Online - jogo voxel multiplayer com banco de mundos, evento 19:30, chat de voz e diretor de cenarios (IA procedural)",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "engines": {
+    "node": ">=16"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "express": "^4.19.2",
+    "sql.js": "^1.10.3",
+    "ws": "^8.17.1"
+  }
+}

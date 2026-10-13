@@ -1,0 +1,33 @@
+# Deploy no Fly.io.  Passos:
+#   fly launch --no-deploy      (cria o app; pode recusar o banco gerenciado)
+#   fly volumes create vrlmdata --size 1 --region gru   (gru = Sao Paulo)
+#   fly deploy
+app = "vrlmcraft-online"
+primary_region = "gru"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  PORT = "15800"
+  DB_FILE = "/data/vrlmcraft.db"
+  EVENT_HOUR = "19"
+  EVENT_MINUTE = "30"
+  EVENT_DURATION_MIN = "60"
+
+[[mounts]]
+  source = "vrlmdata"
+  destination = "/data"
+
+[http_service]
+  internal_port = 15800
+  force_https = true
+  auto_stop_machines = false   # mantem ligado para o WebSocket/voz e o evento 19:30
+  auto_start_machines = true
+  min_machines_running = 1
+
+[[http_service.checks]]
+  method = "get"
+  path = "/api/health"
+  interval = "30s"
+  timeout = "5s"

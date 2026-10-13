@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VRLMCraft Online — Guia Interativo de Deploy</title>
+<style>
+  :root{
+    --bg:#0f1620; --panel:#17202c; --panel2:#1e2938; --line:#2a3747;
+    --txt:#e8eef5; --mut:#9fb0c3; --acc:#4ade80; --acc2:#38bdf8;
+    --warn:#fbbf24; --bad:#f87171; --gold:#facc15;
+    --sh:0 10px 30px rgba(0,0,0,.45);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(1200px 600px at 70% -10%,#1b2a3f 0,var(--bg) 60%);
+    color:var(--txt);font:16px/1.6 system-ui,Segoe UI,Roboto,Arial,sans-serif;padding:0 0 80px}
+  a{color:var(--acc2)}
+  .wrap{max-width:980px;margin:0 auto;padding:0 18px}
+  header.hero{padding:46px 18px 30px;text-align:center}
+  .hero h1{font-size:clamp(26px,5vw,42px);margin:0 0 8px;
+    background:linear-gradient(90deg,var(--acc),var(--acc2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero p{color:var(--mut);margin:0 auto;max-width:640px}
+  .pill{display:inline-block;margin-top:14px;padding:6px 14px;border:1px solid var(--line);
+    border-radius:999px;color:var(--mut);font-size:13px;background:var(--panel)}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;
+    padding:22px;margin:18px 0;box-shadow:var(--sh)}
+  h2{font-size:22px;margin:0 0 14px;display:flex;align-items:center;gap:10px}
+  h2 .n{width:30px;height:30px;flex:0 0 30px;border-radius:8px;background:var(--acc2);color:#06283d;
+    display:grid;place-items:center;font-weight:800;font-size:15px}
+  .reco{background:linear-gradient(135deg,#113524,#0f2a3a);border:1px solid #1f5a3f}
+  .reco .big{font-size:19px;font-weight:800;color:var(--acc)}
+  .badge-free{background:var(--acc);color:#05311c;font-weight:800;padding:2px 10px;border-radius:999px;font-size:12px;margin-left:6px}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+  th{color:var(--mut);font-weight:600;background:var(--panel2)}
+  .yes{color:var(--acc);font-weight:700}
+  .no{color:var(--bad);font-weight:700}
+  .mid{color:var(--warn);font-weight:700}
+  .star{color:var(--gold)}
+  .tabs{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 18px}
+  .tab{cursor:pointer;padding:10px 16px;border-radius:10px;border:1px solid var(--line);
+    background:var(--panel2);color:var(--mut);font-weight:600;user-select:none;transition:.15s}
+  .tab:hover{border-color:var(--acc2)}
+  .tab.active{background:var(--acc2);color:#06283d;border-color:var(--acc2)}
+  .tab .mini{display:block;font-size:11px;font-weight:500;opacity:.8}
+  .steps{display:none}
+  .steps.active{display:block}
+  .progress{height:6px;background:var(--panel2);border-radius:999px;overflow:hidden;margin:4px 0 18px}
+  .progress > i{display:block;height:100%;background:linear-gradient(90deg,var(--acc),var(--acc2));width:0;transition:.3s}
+  .step{display:none;animation:fade .25s ease}
+  .step.show{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .step .lbl{color:var(--acc2);font-weight:700;font-size:13px;letter-spacing:.4px;text-transform:uppercase}
+  .step h3{margin:4px 0 10px;font-size:20px}
+  .step ul{margin:6px 0 0;padding-left:20px}
+  .step li{margin:4px 0}
+  code,.code{background:#0b1118;border:1px solid var(--line);border-radius:6px;padding:1px 7px;
+    font-family:ui-monospace,Consolas,Monaco,monospace;font-size:13px;color:#bfe6ff}
+  pre{background:#0b1118;border:1px solid var(--line);border-radius:10px;padding:14px;overflow:auto;
+    font-family:ui-monospace,Consolas,Monaco,monospace;font-size:13px;color:#bfe6ff}
+  .nav{display:flex;justify-content:space-between;align-items:center;margin-top:18px;gap:12px}
+  .btn{cursor:pointer;border:1px solid var(--line);background:var(--panel2);color:var(--txt);
+    padding:10px 18px;border-radius:10px;font-weight:700;font-size:14px;transition:.15s}
+  .btn:hover:not(:disabled){border-color:var(--acc2)}
+  .btn.primary{background:var(--acc2);color:#06283d;border-color:var(--acc2)}
+  .btn:disabled{opacity:.35;cursor:not-allowed}
+  .count{color:var(--mut);font-size:13px}
+  .shot{margin:14px 0 4px;border-radius:12px;overflow:hidden;border:1px solid var(--line);box-shadow:var(--sh);background:#fff}
+  .shot .bar{background:#e9edf3;padding:9px 12px;display:flex;align-items:center;gap:8px}
+  .shot .dot{width:11px;height:11px;border-radius:50%}
+  .shot .url{flex:1;background:#fff;border-radius:6px;padding:5px 10px;font:12px ui-monospace,monospace;color:#334;margin-left:6px;border:1px solid #d6dde6;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+  .shot .screen{min-height:150px}
+  .cap{color:var(--mut);font-size:12px;margin:6px 2px 0;font-style:italic}
+  .note{border-left:3px solid var(--warn);background:#211c0f;padding:10px 14px;border-radius:0 8px 8px 0;margin:12px 0;font-size:14px}
+  .note.good{border-color:var(--acc);background:#0f2318}
+  .note.bad{border-color:var(--bad);background:#241212}
+  footer{color:var(--mut);text-align:center;font-size:13px;margin-top:30px}
+</style>
+</head>
+<body>
+<header class="hero">
+  <h1>VRLMCraft Online — Guia de Deploy</h1>
+  <p>Passo a passo visual para colocar seu jogo voxel multiplayer no ar. Escolha o servidor, siga as telas e publique.</p>
+  <div class="pill">~10 minutos de setup &bull; opcao gratis sem complicacao &bull; HTTPS automatico</div>
+</header>
+<main class="wrap">
+
+<section class="card reco">
+  <h2><span class="n" style="background:var(--acc);color:#05311c">&#9733;</span> Melhor servidor gratis para subir o jogo</h2>
+  <p class="big">Render.com <span class="badge-free">RECOMENDADO</span></p>
+  <p>Para comecar sem dor de cabeca, o <strong>Render</strong> e a melhor escolha gratis: voce conecta o repositorio do GitHub, ele le o arquivo <code>render.yaml</code> que ja vem no projeto e configura <strong>tudo sozinho</strong> (build, start, HTTPS e o segredo de sessao). Nao precisa de cartao para o plano Free.</p>
+  <div class="note">Detalhe importante do plano <strong>Free</strong> do Render: o servidor “dorme” apos ~15 min sem acesso (acorda sozinho na proxima visita, demora alguns segundos) e <strong>nao tem disco permanente</strong> — ou seja, os mundos salvos podem se perder num novo deploy. Para o banco nunca se perder, duas saidas: (1) ativar o disco no plano <strong>Starter</strong> (~US$ 7/mes) ou (2) usar o <strong>Fly.io</strong>, que oferece <strong>volume de disco no modo gratuito</strong>. Veja a comparacao abaixo.</div>
+  <p style="margin-bottom:0;color:var(--mut)">Resumo pratico: <strong class="yes">Render</strong> = mais facil para testar/mostrar o jogo. <strong class="yes">Fly.io</strong> = melhor gratis para manter os mundos salvos de verdade. Vercel/Netlify <strong class="no">nao funcionam</strong> (sem WebSocket nem disco).</p>
+</section>
+
+<section class="card">
+  <h2>Comparacao dos hosts gratis</h2>
+  <div style="overflow:auto">
+  <table>
+    <thead><tr><th>Host</th><th>Mantem WebSocket (multiplayer/voz)</th><th>Disco p/ mundos salvos</th><th>HTTPS gratis</th><th>Precisa cartao?</th><th>Facilidade</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>Render</strong> (Free)</td>
+        <td class="yes">Sim</td>
+        <td class="no">Nao (so no Starter pago)</td>
+        <td class="yes">Sim</td>
+        <td class="yes">Nao</td>
+        <td class="star">&#9733;&#9733;&#9733;&#9733;&#9733;</td>
+      </tr>
+      <tr>
+        <td><strong>Fly.io</strong></td>
+        <td class="yes">Sim</td>
+        <td class="yes">Sim (volume gratis)</td>
+        <td class="yes">Sim</td>
+        <td class="mid">Sim (so verificacao)</td>
+        <td class="star">&#9733;&#9733;&#9733;&#9733;</td>
+      </tr>
+      <tr>
+        <td><strong>Railway</strong></td>
+        <td class="yes">Sim</td>
+        <td class="yes">Sim (volume)</td>
+        <td class="yes">Sim</td>
+        <td class="mid">Credito gratis, depois paga</td>
+        <td class="star">&#9733;&#9733;&#9733;&#9733;</td>
+      </tr>
+      <tr>
+        <td><strong>VPS proprio</strong></td>
+        <td class="yes">Sim</td>
+        <td class="yes">Sim</td>
+        <td class="mid">Configura via certbot</td>
+        <td class="no">Depende do provedor</td>
+        <td class="star">&#9733;&#9733;</td>
+      </tr>
+      <tr>
+        <td><strong>Vercel / Netlify</strong></td>
+        <td class="no">Nao</td>
+        <td class="no">Nao</td>
+        <td class="yes">Sim</td>
+        <td class="yes">Nao</td>
+        <td class="no">Nao serve</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section class="card">
+  <h2><span class="n">0</span> Pre-requisito: suba o projeto para o GitHub</h2>
+  <p>Quase todos os hosts puxam o codigo direto de um repositorio Git. O projeto ja inclui o script <code>git-setup.sh</code>. No terminal, dentro da pasta do jogo:</p>
+  <pre>git init
+git add .
+git commit -m "VRLMCraft Online"
+git branch -M main
+git remote add origin https://github.com/SEU_USUARIO/vrlmcraft-online.git
+git push -u origin main</pre>
+  <div class="shot">
+    <div class="bar"><span class="dot" style="background:#ff5f57"></span><span class="dot" style="background:#febc2e"></span><span class="dot" style="background:#28c840"></span><span class="url">github.com/SEU_USUARIO/vrlmcraft-online</span></div>
+    <div class="screen">
+      <svg viewBox="0 0 760 200" width="100%" style="display:block">
+        <rect width="760" height="200" fill="#f6f8fa"/>
+        <rect x="0" y="0" width="760" height="46" fill="#24292f"/>
+        <circle cx="28" cy="23" r="11" fill="#ffffff"/>
+        <text x="50" y="28" fill="#fff" font-family="system-ui" font-size="14" font-weight="700">SEU_USUARIO / vrlmcraft-online</text>
+        <rect x="20" y="66" width="720" height="34" rx="6" fill="#dafbe1" stroke="#2da44e"/>
+        <text x="34" y="88" fill="#1a7f37" font-family="system-ui" font-size="13" font-weight="700">&#10003; main atualizado • arquivos enviados</text>
+        <rect x="20" y="112" width="350" height="24" rx="4" fill="#eaeef2"/>
+        <text x="30" y="128" fill="#57606a" font-family="ui-monospace" font-size="12">server.js</text>
+        <rect x="20" y="144" width="350" height="24" rx="4" fill="#eaeef2"/>
+        <text x="30" y="160" fill="#57606a" font-family="ui-monospace" font-size="12">render.yaml</text>
+        <rect x="390" y="112" width="350" height="24" rx="4" fill="#eaeef2"/>
+        <text x="400" y="128" fill="#57606a" font-family="ui-monospace" font-size="12">public/</text>
+        <rect x="390" y="144" width="350" height="24" rx="4" fill="#eaeef2"/>
+        <text x="400" y="160" fill="#57606a" font-family="ui-monospace" font-size="12">Dockerfile</text>
+      </svg>
+    </div>
+  </div>
+  <p class="cap">Ilustracao: o repositorio no GitHub com os arquivos do jogo enviados.</p>
+  <div class="note">Troque <code>SEU_USUARIO</code> pelo seu usuario real do GitHub. Crie o repositorio vazio antes (sem README) para o <code>push</code> funcionar.</div>
+</section>
+
+<section class="card">
+  <h2><span class="n">1</span> Escolha o servidor e siga as telas</h2>
+  <div class="tabs" id="tabs">
+    <div class="tab active" data-host="render">Render <span class="mini">mais facil</span></div>
+    <div class="tab" data-host="fly">Fly.io <span class="mini">melhor p/ salvar</span></div>
+    <div class="tab" data-host="railway">Railway <span class="mini">alternativa</span></div>
+    <div class="tab" data-host="vps">VPS proprio <span class="mini">avancado</span></div>
+  </div>
+
+  <div class="progress"><i id="bar"></i></div>
+
+  <!-- ===== RENDER ===== -->
+  <div class="steps active" data-host="render">
+    <div class="step show">
+      <div class="lbl">Render • Passo 1 de 4</div>
+      <h3>Criar conta e novo Blueprint</h3>
+      <p>Entre em <strong>render.com</strong>, crie a conta (pode usar “Sign in with GitHub”) e clique em <strong>New &rarr; Blueprint</strong>.</p>
+      <div class="shot">
+        <div class="bar"><span class="dot" style="background:#ff5f57"></span><span class="dot" style="background:#febc2e"></span><span class="dot" style="background:#28c840"></span><span class="url">dashboard.render.com</span></div>
+        <div class="screen">
+          <svg viewBox="0 0 760 190" width="100%" style="display:block">
+            <rect width="760" height="190" fill="#0b1120"/>
+            <rect x="0" y="0" width="760" height="44" fill="#111827"/>
+            <circle cx="26" cy="22" r="9" fill="#8b5cf6"/>
+            <text x="44" y="27" fill="#fff" font-family="system-ui" font-size="14" font-weight="700">Render</text>
+            <rect x="600" y="12" width="140" height="24" rx="6" fill="#8b5cf6"/>
+            <text x="670" y="28" fill="#fff" font-family="system-ui" font-size="12" font-weight="700" text-anchor="middle">+ New</text>
+            <rect x="520" y="44" width="220" height="120" rx="8" fill="#1f2937" stroke="#374151"/>
+            <text x="536" y="72" fill="#9ca3af" font-family="system-ui" font-size="12">Web Service</text>
+            <text x="536" y="98" fill="#9ca3af" font-family="system-ui" font-size="12">Static Site</text>
+            <rect x="524" y="112" width="212" height="26" rx="5" fill="#8b5cf6"/>
+            <text x="536" y="130" fill="#fff" font-family="system-ui" font-size="12" font-weight="700">Blueprint  &larr; clique aqui</text>
+          </svg>
+        </div>
+      </div>
+      <p class="cap">No menu New, escolha Blueprint — e ele que le o render.yaml do projeto.</p>
+    </div>
+
+    <div class="step">
+      <div class="lbl">Render • Passo 2 de 4</div>
+      <h3>Conectar o repositorio do jogo</h3>
+      <p>Autorize o Render a acessar o GitHub e selecione o repo <code>vrlmcraft-online</code>. Ele detecta o <code>render.yaml</code> e mostra o servico ja montado.</p>
+      <div class="shot">
+        <div class="bar"><span class="dot" style="background:#ff5f57"></span><span class="dot" style="background:#febc2e"></span><span class="dot" style="background:#28c840"></span><span class="url">dashboard.render.com/blueprints/new</span></div>
+        <div class="screen">
+          <svg viewBox="0 0 760 190" width="100%" style="display:block">
+            <rect width="760" height="190" fill="#0b1120"/>
+            <text x="24" y="34" fill="#fff" font-family="system-ui" font-size="15" font-weight="700">Blueprint detectado</text>
+            <rect x="24" y="50" width="712" height="48" rx="8" fill="#1f2937" stroke="#374151"/>
+            <text x="40" y="72" fill="#e5e7eb" font-family="ui-monospace" font-size="13">render.yaml</text>
+            <text x="40" y="90" fill="#4ade80" font-family="system-ui" font-size="12">1 web service: vrlmcraft-online • disco /var/data (1GB)</text>
+            <rect x="24" y="112" width="712" height="34" rx="6" fill="#065f46"/>
+            <text x="40" y="134" fill="#d1fae5" font-family="system-ui" font-size="13" font-weight="700">&#10003; build: npm install • start: npm start • SESSION_SECRET gerado automaticamente</text>
+          </svg>
+        </div>
+      </div>
+      <p class="cap">O render.yaml ja traz build, start, o disco persistente e o segredo — nao precisa digitar nada.</p>
+      <div class="note">Se quiser o jogo <strong>100% gratis</strong>, mude o plano do servico para <strong>Free</strong>. Mas lembre: no Free o disco em <code>/var/data</code> nao e mantido. Para salvar mundos de verdade, deixe no <strong>Starter</strong> (com disco) ou va de Fly.io.</div>
+    </div>
+
+    <div class="step">
+      <div class="lbl">Render • Passo 3 de 4</div>
+      <h3>Apply / Deploy</h3>
+      <p>Clique em <strong>Apply</strong>. O Render instala, builda e sobe o servidor. Acompanhe os logs ate aparecer <code>Servidor ouvindo...</code>.</p>
+      <div class="shot">
+        <div class="bar"><span class="dot" style="background:#ff5f57"></span><span class="dot" style="background:#febc2e"></span><span class="dot" style="background:#28c840"></span><span class="url">dashboard.render.com/web/vrlmcraft-online/logs</span></div>
+        <div class="screen" style="background:#0b1120">
+          <svg viewBox="0 0 760 190" width="100%" style="display:block">
+            <rect width="760" height="190" fill="#0b1120"/>
+            <text x="20" y="34" fill="#9ca3af" font-family="ui-monospace" font-size="12">==&gt; Cloning from github.com/SEU_USUARIO/vrlmcraft-online</text>
+            <text x="20" y="58" fill="#9ca3af" font-family="ui-monospace" font-size="12">==&gt; Running 'npm install'  ... added 60 packages</text>
+            <text x="20" y="82" fill="#9ca3af" font-family="ui-monospace" font-size="12">==&gt; Running 'npm start'</text>
+            <text x="20" y="106" fill="#38bdf8" font-family="ui-monospace" font-size="12">[db] banco pronto em /var/data/vrlmcraft.db</text>
+            <text x="20" y="130" fill="#4ade80" font-family="ui-monospace" font-size="13" font-weight="700">VRLMCraft Online ouvindo na porta 10000</text>
+            <rect x="20" y="150" width="220" height="28" rx="6" fill="#065f46"/>
+            <text x="34" y="169" fill="#d1fae5" font-family="system-ui" font-size="13" font-weight="700">&#10003; Live</text>
+          </svg>
+        </div>
+      </div>
+      <p class="cap">Quando aparece “Live” em verde, o jogo esta no ar.</p>
+    </div>
+
+    <div class="step">
+      <div class="lbl">Render • Passo 4 de 4</div>
+      <h3>Abrir a URL publica</h3>
+      <p>No topo da pagina do servico aparece a URL (ja com HTTPS), algo como <code>https://vrlmcraft-online.onrender.com</code>. Abra e jogue!</p>
+      <div class="shot">
+        <div class="bar"><span class="dot" style="background:#ff5f57"></span><span class="dot" style="background:#febc2e"></span><span class="dot" style="background:#28c840"></span><span class="url">https://vrlmcraft-online.onrender.com</span></div>
+        <div class="screen">
+          <svg viewBox="0 0 760 190" width="100%" style="display:block">
+            <defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5ba9f0"/><stop offset="1" stop-color="#bfe3ff"/></linearGradient></defs>
+            <rect width="760" height="190" fill="url(#sky)"/>
+            <rect y="120" width="760" height="70" fill="#5a8f3c"/>
+            <rect x="120" y="96" width="40" height="40" fill="#7cb342" stroke="#2e4f1a"/>
+            <rect x="160" y="96" width="40" height="40" fill="#8d6e63" stroke="#2e4f1a"/>
+            <rect x="200" y="96" width="40" height="40" fill="#7cb342" stroke="#2e4f1a"/>
+            <rect x="560" y="70" width="40" height="66" fill="#9e9e9e" stroke="#333"/>
+            <circle cx="650" cy="44" r="20" fill="#fff3b0"/>
+            <rect x="320" y="150" width="120" height="34" rx="6" fill="rgba(0,0,0,.55)"/>
+            <text x="380" y="172" fill="#fff" font-family="system-ui" font-size="14" font-weight="700" text-anchor="middle">VRLMCraft</text>
+          </svg>
+        </div>
+      </div>
+      <p class="cap">O jogo rodando no navegador pela URL publica. Compartilhe esse link com os amigos.</p>
+      <div class="note good">Pronto! Teste criar conta, salvar um mundo, sair e entrar de novo. Se o mundo continuar la, o banco esta funcionando.</div>
+    </div>
+  </div>
+
+  <!-- ===== FLY ===== -->
+  <div class="steps" data-host="fly">
+    <div class="step show">
+      <div class="lbl">Fly.io • Passo 1 de 4</div>
+      <h3>Instalar o Fly CLI e logar</h3>
+      <p>Melhor opcao gratis com <strong>disco permanente</strong>. Instale o CLI e faca login:</p>
+      <pre># Windows (PowerShell)
+iwr https://fly.io/install.ps1 -useb | iex
+# Mac/Linux
+curl -L https://fly.io/install.sh | sh
+
+fly auth signup   # ou: fly auth login</pre>
+      <div class="note">O Fly pede um cartao apenas para <strong>verificacao anti-abuso</strong> — o uso dentro das franquias gratuitas (VM pequena + volume de 1-3GB) nao gera cobranca.</div>
+    </div>
+    <div class="step">
+      <div class="lbl">Fly.io • Passo 2 de 4</div>
+      <h3>Lancar o app</h3>
+      <p>Na pasta do jogo (ele ja tem o <code>fly.toml</code>):</p>
+      <pre>fly launch --no-deploy   # recuse bancos gerenciados; mantem o fly.toml</pre>
+      <div class="shot">
+        <div class="bar"><span class="dot" style="background:#ff5f57"></span><span class="dot" style="background:#febc2e"></span><span class="dot" style="background:#28c840"></span><span class="url">terminal — fly launch</span></div>
+        <div class="screen" style="background:#0b1120">
+          <svg viewBox="0 0 760 150" width="100%" style="display:block">
+            <rect width="760" height="150" fill="#0b1120"/>
+            <text x="20" y="34" fill="#c084fc" font-family="ui-monospace" font-size="12">An existing fly.toml file was found for app vrlmcraft-online</text>
+            <text x="20" y="58" fill="#9ca3af" font-family="ui-monospace" font-size="12">? Would you like to copy its configuration? Yes</text>
+            <text x="20" y="82" fill="#9ca3af" font-family="ui-monospace" font-size="12">Region: gru (Sao Paulo)</text>
+            <text x="20" y="106" fill="#4ade80" font-family="ui-monospace" font-size="12">Your app is ready! Deploy with 'fly deploy'</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="lbl">Fly.io • Passo 3 de 4</div>
+      <h3>Criar o volume e o segredo</h3>
+      <p>O volume e o disco onde os mundos ficam salvos. O segredo protege as sessoes:</p>
+      <pre>fly volumes create vrlmdata --size 1 --region gru
+fly secrets set SESSION_SECRET=$(openssl rand -hex 24)</pre>
+      <div class="note good">Com volume criado, os mundos salvos <strong>persistem</strong> entre deploys — por isso o Fly e o melhor gratis para o jogo “de verdade”.</div>
+    </div>
+    <div class="step">
+      <div class="lbl">Fly.io • Passo 4 de 4</div>
+      <h3>Deploy</h3>
+      <pre>fly deploy</pre>
+      <p>Ao terminar, a URL sera <code>https://vrlmcraft-online.fly.dev</code> (com HTTPS). Rode <code>fly open</code> para abrir no navegador.</p>
+      <div class="note good">Pronto! Mesmo teste: crie conta, salve mundo, saia e volte — deve continuar la.</div>
+    </div>
+  </div>
+
+  <!-- ===== RAILWAY ===== -->
+  <div class="steps" data-host="railway">
+    <div class="step show">
+      <div class="lbl">Railway • Passo 1 de 4</div>
+      <h3>Novo projeto a partir do GitHub</h3>
+      <p>Em <strong>railway.app</strong>, clique em <strong>New Project &rarr; Deploy from GitHub repo</strong> e escolha o repo. Ele usa o <code>Dockerfile</code> (configurado no <code>railway.json</code>).</p>
+    </div>
+    <div class="step">
+      <div class="lbl">Railway • Passo 2 de 4</div>
+      <h3>Definir as variaveis</h3>
+      <p>Em <strong>Variables</strong>, adicione:</p>
+      <pre>DB_FILE=/data/vrlmcraft.db
+SESSION_SECRET=&lt;uma chave aleatoria longa&gt;
+EVENT_HOUR=19
+EVENT_MINUTE=30</pre>
+    </div>
+    <div class="step">
+      <div class="lbl">Railway • Passo 3 de 4</div>
+      <h3>Criar o volume</h3>
+      <p>Em <strong>Settings &rarr; Volumes</strong>, crie um volume e monte em <code>/data</code> (o mesmo caminho de <code>DB_FILE</code>). E ai que os mundos salvos ficam guardados.</p>
+    </div>
+    <div class="step">
+      <div class="lbl">Railway • Passo 4 de 4</div>
+      <h3>Gerar o dominio</h3>
+      <p>Em <strong>Settings &rarr; Networking &rarr; Generate Domain</strong>, pegue a URL publica com HTTPS e abra o jogo.</p>
+      <div class="note">O Railway da um credito gratis de teste; depois dele o uso continuo passa a ser cobrado. Para 100% gratis sem prazo, prefira Render (testar) ou Fly.io (persistente).</div>
+    </div>
+  </div>
+
+  <!-- ===== VPS ===== -->
+  <div class="steps" data-host="vps">
+    <div class="step show">
+      <div class="lbl">VPS • Passo 1 de 3</div>
+      <h3>Preparar a maquina</h3>
+      <p>Instale Node.js 18+ e envie os arquivos. Depois:</p>
+      <pre>npm install
+cp .env.example .env     # edite PORT, SESSION_SECRET, DB_FILE
+npm start</pre>
+    </div>
+    <div class="step">
+      <div class="lbl">VPS • Passo 2 de 3</div>
+      <h3>Manter rodando sempre (systemd)</h3>
+      <p>Crie <code>/etc/systemd/system/vrlmcraft.service</code> e ative:</p>
+      <pre>[Service]
+WorkingDirectory=/opt/vrlmcraft
+ExecStart=/usr/bin/node server.js
+Environment=PORT=15800
+Environment=DB_FILE=/opt/vrlmcraft/db/vrlmcraft.db
+Environment=SESSION_SECRET=TROQUE_ISSO
+Restart=always
+
+sudo systemctl enable --now vrlmcraft</pre>
+      <p style="color:var(--mut)">Alternativa simples: <code>npm i -g pm2 &amp;&amp; pm2 start server.js</code>.</p>
+    </div>
+    <div class="step">
+      <div class="lbl">VPS • Passo 3 de 3</div>
+      <h3>HTTPS com Nginx + certbot</h3>
+      <p>Ponha o Nginx como proxy (precisa repassar o WebSocket <code>/ws</code>) e gere o certificado:</p>
+      <pre>proxy_pass http://127.0.0.1:15800;
+proxy_http_version 1.1;
+proxy_set_header Upgrade $http_upgrade;
+proxy_set_header Connection "upgrade";
+
+sudo certbot --nginx</pre>
+      <div class="note bad">Sem HTTPS o chat de voz (microfone) e o WebSocket podem ser bloqueados pelo navegador. HTTPS e obrigatorio.</div>
+    </div>
+  </div>
+
+  <div class="nav">
+    <button class="btn" id="prev">&larr; Anterior</button>
+    <span class="count" id="count"></span>
+    <button class="btn primary" id="next">Proximo &rarr;</button>
+  </div>
+</section>
+
+<section class="card">
+  <h2><span class="n">2</span> Conferir se deu tudo certo</h2>
+  <ul>
+    <li>Acesse <code>https://SEU-DOMINIO/api/health</code> &rarr; deve responder <code>{"ok":true}</code>.</li>
+    <li>Crie uma conta, salve um mundo, saia e entre de novo — o mundo precisa continuar la (prova do disco/banco).</li>
+    <li>Abra em dois navegadores diferentes e entre no mesmo mundo para testar o multiplayer e o chat de voz.</li>
+  </ul>
+  <div class="note"><strong>Seguranca:</strong> rode sempre atras de HTTPS, use um <code>SESSION_SECRET</code> aleatorio e longo, e guarde os segredos apenas no painel do host (nunca dentro do codigo no GitHub).</div>
+</section>
+
+<footer>VRLMCraft Online — guia de deploy. Dica: comece pelo Render para ver no ar rapido; migre para Fly.io quando quiser os mundos salvos permanentes.</footer>
+</main>
+
+<script>
+(function(){
+  var hosts={};
+  document.querySelectorAll('.steps').forEach(function(box){
+    hosts[box.getAttribute('data-host')]={box:box,steps:box.querySelectorAll('.step'),idx:0};
+  });
+  var current='render';
+  var bar=document.getElementById('bar');
+  var count=document.getElementById('count');
+  var prev=document.getElementById('prev');
+  var next=document.getElementById('next');
+
+  function render(){
+    var h=hosts[current];
+    h.steps.forEach(function(s,i){ s.classList.toggle('show', i===h.idx); });
+    bar.style.width=((h.idx+1)/h.steps.length*100)+'%';
+    count.textContent='Passo '+(h.idx+1)+' de '+h.steps.length;
+    prev.disabled=h.idx===0;
+    next.textContent=(h.idx===h.steps.length-1)?'Concluido':'Proximo \u2192';
+  }
+  prev.addEventListener('click',function(){ var h=hosts[current]; if(h.idx>0){h.idx--;render();} });
+  next.addEventListener('click',function(){ var h=hosts[current]; if(h.idx<h.steps.length-1){h.idx++;render();} });
+
+  document.querySelectorAll('#tabs .tab').forEach(function(tab){
+    tab.addEventListener('click',function(){
+      document.querySelectorAll('#tabs .tab').forEach(function(t){t.classList.remove('active');});
+      tab.classList.add('active');
+      current=tab.getAttribute('data-host');
+      document.querySelectorAll('.steps').forEach(function(b){
+        b.classList.toggle('active', b.getAttribute('data-host')===current);
+      });
+      render();
+    });
+  });
+  render();
+})();
+</script>
+</body>
+</html>
+

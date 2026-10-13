@@ -1,0 +1,28 @@
+# Deploy no Render.com (Web Service + Disco persistente)
+# 1) Suba este projeto para um repositorio Git (GitHub/GitLab)
+# 2) No Render: New > Blueprint > aponte para o repo. Ele le este arquivo.
+services:
+  - type: web
+    name: vrlmcraft-online
+    runtime: node
+    plan: starter            # 'free' tambem funciona, mas sem disco persistente
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: 18
+      - key: DB_FILE
+        value: /var/data/vrlmcraft.db
+      - key: EVENT_HOUR
+        value: "19"
+      - key: EVENT_MINUTE
+        value: "30"
+      - key: EVENT_DURATION_MIN
+        value: "60"
+      - key: SESSION_SECRET
+        generateValue: true   # Render gera um segredo aleatorio automaticamente
+    disk:
+      name: vrlmcraft-data
+      mountPath: /var/data    # o arquivo do banco fica aqui e NAO se perde nos deploys
+      sizeGB: 1
